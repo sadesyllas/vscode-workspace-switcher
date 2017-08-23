@@ -1,0 +1,77 @@
+{
+  "name": "vscode-workspace-switcher",
+  "displayName": "vscode-workspace-switcher",
+  "description": "Easily switch between workspaces",
+  "version": "1.0.0",
+  "publisher": "sadesyllas",
+  "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher/blob/master/README.md",
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/sadesyllas/vscode-workspace-switcher.git"
+  },
+  "bugs": {
+		"url": "https://github.com/sadesyllas/vscode-workspace-switcher/issues"
+  },
+  "engines": {
+    "vscode": "^1.15.0"
+  },
+  "categories": [
+    "Other"
+  ],
+	"keywords": [
+		"workspace",
+		"switch"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [
+    "onCommand:extension.switchWorkspace",
+    "onCommand:extension.switchWorkspaceNewWindow"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "vscode-workspace-switcher configuration",
+      "properties": {
+        "vscodeWorkspaceSwitcher.paths": {
+          "type": "array",
+          "default": [],
+          "description": "Paths of directories when `.code-workspace` files can be found"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.switchWorkspace",
+        "title": "Switch workspace..."
+      },
+      {
+        "command": "extension.switchWorkspaceNewWindow",
+        "title": "Switch workspace in new window..."
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "Ctrl+k w",
+        "command": "extension.switchWorkspace"
+      },
+      {
+        "key": "Ctrl+k Ctrl-w",
+        "command": "extension.switchWorkspaceNewWindow"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0",
+    "mocha": "^2.3.3",
+    "@types/node": "^6.0.40",
+    "@types/mocha": "^2.2.32"
+  }
+}
