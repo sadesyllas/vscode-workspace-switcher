@@ -49,7 +49,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
         return;
       }
 
-      const entry = workspaceEntries.find(entry => entry.name === item.label);
+      const entry = workspaceEntries.find(entry => entry.path === item.description);
 
       if (!entry) {
         return;
