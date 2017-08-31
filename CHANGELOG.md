@@ -1,7 +1,6 @@
-# Change Log
-All notable changes to the "vscode-workspace-switcher" extension will be documented in this file.
+# Changelog
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
-- Initial release
+- ## v1.0.1: Refactor workspace menu code
+
+- ## v1.0.0: Implement vscode-workspace-switcher

@@ -32,16 +32,16 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
     return;
   }
 
+  const items = workspaceEntries.map(entry => <vscode.QuickPickItem>{
+    label: entry.name,
+    description: entry.path,
+  });
+
   const options = <vscode.QuickPickOptions>{
     matchOnDescription: false,
     matchOnDetail: false,
     placeHolder: `Choose workspace to switch to${inNewWindow ? ' in a new window' : ''}...`,
   };
-
-  const items = workspaceEntries.map(entry => <vscode.QuickPickItem>{
-    label: entry.name,
-    description: entry.path,
-  });
 
   vscode.window.showQuickPick(items, options).then(
     (item: vscode.QuickPickItem) => {
