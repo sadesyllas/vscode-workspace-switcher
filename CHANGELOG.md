@@ -1,6 +1,8 @@
 # Changelog
 
 
+- ## v1.3.2: Revert fix for button order of the `Save workspace...` command prompt
+
 - ## v1.3.1: Fix button order of the `Save workspace...` command prompt
 
 - ## v1.3.0: Implement saving the current workspace
