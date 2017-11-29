@@ -2,15 +2,15 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher/blob/master/README.md",
   "repository": {
-		"type": "git",
-		"url": "https://github.com/sadesyllas/vscode-workspace-switcher.git"
+    "type": "git",
+    "url": "https://github.com/sadesyllas/vscode-workspace-switcher.git"
   },
   "bugs": {
-		"url": "https://github.com/sadesyllas/vscode-workspace-switcher/issues"
+    "url": "https://github.com/sadesyllas/vscode-workspace-switcher/issues"
   },
   "engines": {
     "vscode": "^1.15.0"
@@ -18,12 +18,14 @@
   "categories": [
     "Other"
   ],
-	"keywords": [
-		"workspace",
-		"switch"
+  "keywords": [
+    "workspace",
+    "save",
+    "switch"
   ],
   "icon": "icon.png",
   "activationEvents": [
+    "onCommand:extension.saveWorkspace",
     "onCommand:extension.switchWorkspace",
     "onCommand:extension.switchWorkspaceNewWindow"
   ],
@@ -36,11 +38,15 @@
         "vscodeWorkspaceSwitcher.paths": {
           "type": "array",
           "default": [],
-          "description": "Paths of directories when `.code-workspace` files can be found"
+          "description": "Paths of directories when `.code-workspace` files can be saved and then read from"
         }
       }
     },
     "commands": [
+      {
+        "command": "extension.saveWorkspace",
+        "title": "Save workspace..."
+      },
       {
         "command": "extension.switchWorkspace",
         "title": "Switch workspace..."
@@ -52,11 +58,15 @@
     ],
     "keybindings": [
       {
-        "key": "Ctrl+k w",
+        "key": "Ctrl-k Shift-w",
+        "command": "extension.saveWorkspace"
+      },
+      {
+        "key": "Ctrl-k w",
         "command": "extension.switchWorkspace"
       },
       {
-        "key": "Ctrl+k Ctrl-w",
+        "key": "Ctrl-k Ctrl-w",
         "command": "extension.switchWorkspaceNewWindow"
       }
     ]

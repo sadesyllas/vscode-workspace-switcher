@@ -1,13 +1,14 @@
 'use strict';
 
-import {existsSync, lstatSync, readdirSync} from 'fs';
-import {join} from 'path';
+import {existsSync, lstatSync, readdirSync, writeFileSync} from 'fs';
+import {join, dirname, basename} from 'path';
 import {exec} from 'child_process';
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
   const disposables = [];
 
+  disposables.push(vscode.commands.registerCommand('extension.saveWorkspace', () => saveWorkspacePrompt()));
   disposables.push(vscode.commands.registerCommand('extension.switchWorkspace', () => switchWorkspacePrompt(false)));
   disposables.push(vscode.commands.registerCommand('extension.switchWorkspaceNewWindow', () => switchWorkspacePrompt(true)));
 
@@ -23,6 +24,86 @@ interface WorkspaceEntry {
 
 let workspaceEntries = <WorkspaceEntry[]>[];
 
+function saveWorkspacePrompt() {
+  const workspaceEntryDirectories = getWorkspaceEntryDirectories();
+
+  if (!workspaceEntryDirectories.length) {
+    vscode.window.showInformationMessage('No workspace directories have been configured');
+
+    return;
+  }
+
+  const directoryItems = workspaceEntryDirectories.map(directory => <vscode.QuickPickItem>{
+    label: basename(directory),
+    description: dirname(directory),
+  });
+
+  const options = <vscode.QuickPickOptions>{
+    matchOnDescription: false,
+    matchOnDetail: false,
+    placeHolder: 'Choose a workspace directory to save the new workspace file...',
+  };
+
+  vscode.window.showQuickPick(directoryItems, options).then(
+    (directoryItem: vscode.QuickPickItem) => {
+      if (!directoryItem) {
+        return;
+      }
+
+      vscode.window.showInputBox(<vscode.InputBoxOptions>{prompt: 'Enter a name for the workspace file...'}).then(
+        (workspaceFileName: string) => {
+          workspaceFileName = (workspaceFileName || '').trim();
+
+          if (workspaceFileName === '') {
+            return;
+          }
+
+          const workspaceFilePath =
+            join(directoryItem.description,  directoryItem.label, workspaceFileName)
+            + '.code-workspace';
+
+          const workspaceFolderPaths = (vscode.workspace.workspaceFolders || []).map(
+            (workspaceFolder: vscode.WorkspaceFolder) => ({path: workspaceFolder.uri.fsPath}));
+
+            const workspaceFileContent = JSON.stringify({
+            folders: workspaceFolderPaths,
+            settings: {},
+          });
+
+          const workspaceFilePathSaveFunc = () => {
+            try {
+              writeFileSync(workspaceFilePath, workspaceFileContent, {encoding: 'utf8'});
+
+              switchToWorkspace(<WorkspaceEntry>{
+                path: workspaceFilePath,
+              });
+            } catch (error) {
+              vscode.window.showErrorMessage(
+                'Error while trying to save workspace '
+                + `${workspaceFileName} to ${workspaceFilePath}: ${error.message}`);
+            }
+          }
+
+          if (existsSync(workspaceFilePath)) {
+            vscode.window.showInformationMessage(
+              `File ${workspaceFilePath} already exists. Do you want to override it?`, 'Yes', 'No').then(
+                (answer: string) => {
+                  if ((answer || '').trim().toLowerCase() !== 'yes') {
+                    return;
+                  }
+
+                  workspaceFilePathSaveFunc();
+                },
+                (reason: any) => {});
+          } else {
+            workspaceFilePathSaveFunc();
+          }
+        },
+        (reason: any) => {});
+    },
+    (reason: any) => {});
+}
+
 function switchWorkspacePrompt(inNewWindow: boolean = false) {
   workspaceEntries = gatherWorkspaceEntries();
 
@@ -32,7 +113,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
     return;
   }
 
-  const items = workspaceEntries.map(entry => <vscode.QuickPickItem>{
+  const workspaceItems = workspaceEntries.map(entry => <vscode.QuickPickItem>{
     label: entry.name,
     description: entry.path,
   });
@@ -43,13 +124,13 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
     placeHolder: `Choose workspace to switch to${inNewWindow ? ' in a new window' : ''}...`,
   };
 
-  vscode.window.showQuickPick(items, options).then(
-    (item: vscode.QuickPickItem) => {
-      if (!item) {
+  vscode.window.showQuickPick(workspaceItems, options).then(
+    (workspaceItem: vscode.QuickPickItem) => {
+      if (!workspaceItem) {
         return;
       }
 
-      const entry = workspaceEntries.find(entry => entry.path === item.description);
+      const entry = workspaceEntries.find(entry => entry.path === workspaceItem.description);
 
       if (!entry) {
         return;
@@ -66,32 +147,36 @@ function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean 
   exec(command, onCommandRun);
 }
 
-function gatherWorkspaceEntries(): WorkspaceEntry[] {
+function getWorkspaceEntryDirectories(): string[] {
   var paths = <string[]>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('paths');
 
-  if (!paths || !paths.length) {
-    return [];
-  }
-
-  paths = paths.filter(p => typeof(p) === 'string');
-
-  if (!paths.length) {
-    return [];
-  }
-
-  const pathsHash = paths.reduce((prePath: string, path: string, pathIdx: number, acc: {}) => (acc[path] = true, acc), {});
-
-  const uniquePaths = Object.keys(pathsHash);
-
-  const existingDirectoryPaths = paths.filter(p => {
-    try {
-      return existsSync(p) && lstatSync(p).isDirectory();
-    } catch (err) {
-      return false;
+    if (!paths || !paths.length) {
+      return [];
     }
-  });
 
-  return (<WorkspaceEntry[]>existingDirectoryPaths.reduce((acc: WorkspaceEntry[], dir: string) => {
+    paths = paths.filter(p => typeof(p) === 'string');
+
+    if (!paths.length) {
+      return [];
+    }
+
+    const pathsHash = paths.reduce((prePath: string, path: string, pathIdx: number, acc: {}) => (acc[path] = true, acc), {});
+
+    const uniquePaths = Object.keys(pathsHash);
+
+    return paths.filter(p => {
+      try {
+        return existsSync(p) && lstatSync(p).isDirectory();
+      } catch (err) {
+        return false;
+      }
+    });
+}
+
+function gatherWorkspaceEntries(): WorkspaceEntry[] {
+  const directoryPaths = getWorkspaceEntryDirectories();
+
+  return (<WorkspaceEntry[]>directoryPaths.reduce((acc: WorkspaceEntry[], dir: string) => {
     return readdirSync(dir)
       .filter(fileName => {
         try {
