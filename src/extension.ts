@@ -86,7 +86,7 @@ function saveWorkspacePrompt() {
 
           if (existsSync(workspaceFilePath)) {
             vscode.window.showInformationMessage(
-              `File ${workspaceFilePath} already exists. Do you want to override it?`, 'Yes', 'No').then(
+              `File ${workspaceFilePath} already exists. Do you want to override it?`, 'No', 'Yes').then(
                 (answer: string) => {
                   if ((answer || '').trim().toLowerCase() !== 'yes') {
                     return;
