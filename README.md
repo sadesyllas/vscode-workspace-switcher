@@ -37,7 +37,7 @@ This extension contributes the following commands:
 
 This extension contributes the following key bindings:
 
-* `Ctrl-w Shift-w`
+* `Ctrl-k Shift-w`
   * Save the current workspace to a `.code-workspace` file
 * `Ctrl-k w`
   * Switch workspace in current window

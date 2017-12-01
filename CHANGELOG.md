@@ -1,6 +1,8 @@
 # Changelog
 
 
+- ## v1.3.3: Release: Fix a typo in key bindings (pull request #3 from joonro/patch-1)
+
 - ## v1.3.2: Revert fix for button order of the `Save workspace...` command prompt
 
 - ## v1.3.1: Fix button order of the `Save workspace...` command prompt
