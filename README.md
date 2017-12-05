@@ -12,15 +12,20 @@ Easily switch between workspaces
 ## Requirements
 
 * The editor (i.e., `code` or `code-insiders`) must be in your `$PATH`
+  or the path to the appropriate executable must be set through the available settings
+  (`vscodeWorkspaceSwitcher.codeExecutable` or `vscodeWorkspaceSwitcher.codeInsidersExecutable`)
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
 * `vscodeWorkspaceSwitcher.paths`
-
   * Array of strings, each representing directory where your `.code-workspace` files are stored
   * These directory paths will also be used to select where to create a `.code-workspace` file for the current workspace
+* `vscodeWorkspaceSwitcher.codeExecutable`
+  * String representing the path to VS Code's executable in case it cannot be found in `$PATH`
+* `vscodeWorkspaceSwitcher.codeInsidersExecutable`
+  * String representing the path to VS Code Insiders's executable in case it cannot be found in `$PATH`
 
 ## Commands
 

@@ -1,6 +1,7 @@
 {
   "files.exclude": {
-    "out": false
+    "out": false,
+    "node_modules": "explorerExcludedFiles"
   },
   "search.exclude": {
     "out": true

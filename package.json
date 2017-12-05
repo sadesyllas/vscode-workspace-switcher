@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher/blob/master/README.md",
   "repository": {
@@ -39,6 +39,16 @@
           "type": "array",
           "default": [],
           "description": "Paths of directories when `.code-workspace` files can be saved and then read from"
+        },
+        "vscodeWorkspaceSwitcher.codeExecutable": {
+          "type": "string",
+          "default": "code",
+          "description": "Path to the executable file for VS Code"
+        },
+        "vscodeWorkspaceSwitcher.codeInsidersExecutable": {
+          "type": "string",
+          "default": "code-insiders",
+          "description": "Path to the executable file for VS Code Insiders"
         }
       }
     },

@@ -198,7 +198,14 @@ function gatherWorkspaceEntries(): WorkspaceEntry[] {
 }
 
 function getApp() {
-  return vscode.env.appName.toLowerCase().search("insiders") != -1 ? 'code-insiders' : 'code';
+  const key = `${vscode.env.appName.toLowerCase().search("insiders") !== -1 ? 'codeInsiders' : 'code'}Executable`;
+  const app = <string>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get(key);
+
+  if (app.search(/\s/) !== -1) {
+    return `"${app}"`;
+  }
+
+  return app;
 }
 
 function onCommandRun(err: Error, stdout: string, stderr: string) {

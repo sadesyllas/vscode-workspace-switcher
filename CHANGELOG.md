@@ -1,6 +1,8 @@
 # Changelog
 
 
+- ## v1.4.0: Provide settings to explicitly set the path to the executable
+
 - ## v1.3.3: Release: Fix a typo in key bindings (pull request #3 from joonro/patch-1)
 
 - ## v1.3.2: Revert fix for button order of the `Save workspace...` command prompt
