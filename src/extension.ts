@@ -154,19 +154,16 @@ function getWorkspaceEntryDirectories(): string[] {
       return [];
     }
 
-    paths = paths.filter(p => typeof(p) === 'string');
+    const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] || "~";
+
+    paths = paths.filter(p => typeof(p) === 'string').map(p => p.replace('~', userHome));
 
     if (!paths.length) {
       return [];
     }
 
-    const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"];
-
-    for (var i = 0; i < paths.length; i++) {
-      paths[i] = paths[i].replace('~', userHome);
-    }
-
-    const pathsHash = paths.reduce((prePath: string, path: string, pathIdx: number, acc: {}) => (acc[path] = true, acc), {});
+    const pathsHash = paths.reduce((prePath: string, path: string, pathIdx: number, acc: {}) =>
+      (acc[path] = true, acc), {});
 
     const uniquePaths = Object.keys(pathsHash);
 

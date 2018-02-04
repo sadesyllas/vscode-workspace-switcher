@@ -1,5 +1,6 @@
 # Changelog
 
+- ## v1.5.0: Handle `~` in configuration folder paths (PR#6)
 
 - ## v1.4.0: Provide settings to explicitly set the path to the executable
 
