@@ -143,7 +143,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
 
 function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
   const app = getApp();
-  const command = `${app} ${inNewWindow ? '-n' : '-r'} ${workspaceEntry.path}`;
+  const command = `${app} ${inNewWindow ? '-n' : '-r'} "${workspaceEntry.path}"`;
   exec(command, onCommandRun);
 }
 
