@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.6.0: Add support for wildcards in vscodeWorkspaceSwitcher.paths (#8)
+
 - ## v1.5.1: Quote paths to workspaces (#7)
 
 - ## v1.5.0: Handle `~` in configuration folder paths (PR#6)

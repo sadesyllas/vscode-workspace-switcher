@@ -1,9 +1,11 @@
 'use strict';
 
-import {existsSync, lstatSync, readdirSync, writeFileSync} from 'fs';
-import {join, dirname, basename} from 'path';
-import {exec} from 'child_process';
+import { existsSync, lstatSync, readdirSync, writeFileSync } from 'fs';
+import { join, dirname, basename } from 'path';
+import { exec } from 'child_process';
 import * as vscode from 'vscode';
+
+const glob = require('glob-fs')();
 
 export function activate(context: vscode.ExtensionContext) {
   const disposables = [];
@@ -15,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(...disposables);
 }
 
-export function deactivate() {}
+export function deactivate() { }
 
 interface WorkspaceEntry {
   name: string,
@@ -50,7 +52,7 @@ function saveWorkspacePrompt() {
         return;
       }
 
-      vscode.window.showInputBox(<vscode.InputBoxOptions>{prompt: 'Enter a name for the workspace file...'}).then(
+      vscode.window.showInputBox(<vscode.InputBoxOptions>{ prompt: 'Enter a name for the workspace file...' }).then(
         (workspaceFileName: string) => {
           workspaceFileName = (workspaceFileName || '').trim();
 
@@ -59,20 +61,20 @@ function saveWorkspacePrompt() {
           }
 
           const workspaceFilePath =
-            join(directoryItem.description,  directoryItem.label, workspaceFileName)
+            join(directoryItem.description, directoryItem.label, workspaceFileName)
             + '.code-workspace';
 
           const workspaceFolderPaths = (vscode.workspace.workspaceFolders || []).map(
-            (workspaceFolder: vscode.WorkspaceFolder) => ({path: workspaceFolder.uri.fsPath}));
+            (workspaceFolder: vscode.WorkspaceFolder) => ({ path: workspaceFolder.uri.fsPath }));
 
-            const workspaceFileContent = JSON.stringify({
+          const workspaceFileContent = JSON.stringify({
             folders: workspaceFolderPaths,
             settings: {},
           });
 
           const workspaceFilePathSaveFunc = () => {
             try {
-              writeFileSync(workspaceFilePath, workspaceFileContent, {encoding: 'utf8'});
+              writeFileSync(workspaceFilePath, workspaceFileContent, { encoding: 'utf8' });
 
               switchToWorkspace(<WorkspaceEntry>{
                 path: workspaceFilePath,
@@ -94,14 +96,14 @@ function saveWorkspacePrompt() {
 
                   workspaceFilePathSaveFunc();
                 },
-                (reason: any) => {});
+                (reason: any) => { });
           } else {
             workspaceFilePathSaveFunc();
           }
         },
-        (reason: any) => {});
+        (reason: any) => { });
     },
-    (reason: any) => {});
+    (reason: any) => { });
 }
 
 function switchWorkspacePrompt(inNewWindow: boolean = false) {
@@ -138,7 +140,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
 
       switchToWorkspace(entry, inNewWindow);
     },
-    (reason: any) => {});
+    (reason: any) => { });
 }
 
 function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
@@ -150,30 +152,44 @@ function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean 
 function getWorkspaceEntryDirectories(): string[] {
   var paths = <string[]>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('paths');
 
-    if (!paths || !paths.length) {
-      return [];
-    }
+  if (!paths || !paths.length) {
+    return [];
+  }
 
-    const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] || "~";
+  const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] || "~";
 
-    paths = paths.filter(p => typeof(p) === 'string').map(p => p.replace('~', userHome));
+  paths = paths.filter(p => typeof (p) === 'string').map(p => p.replace('~', userHome));
 
-    if (!paths.length) {
-      return [];
-    }
+  if (!paths.length) {
+    return [];
+  }
 
-    const pathsHash = paths.reduce((prePath: string, path: string, pathIdx: number, acc: {}) =>
-      (acc[path] = true, acc), {});
+  const pathsHash = paths.reduce((acc, path) => (acc[path] = true, acc), {});
 
-    const uniquePaths = Object.keys(pathsHash);
+  const uniquePaths = Object.keys(pathsHash);
 
-    return paths.filter(p => {
+  const pathsAfterGlobbingHash = uniquePaths
+    .map(p => {
+      p = p.replace(/\\/g, '/').replace(/\/$/, '') + '/';
+
+      try {
+        return glob.readdirSync(p, { cwd: '/' });
+      } catch (err) {
+        return [];
+      }
+    })
+    .reduce((acc, val) => acc.concat(val.map(p => `/${p}`)), [])
+    .concat(uniquePaths.map(p => p.replace(/\*\*\/?$/, '')))
+    .filter(p => {
       try {
         return existsSync(p) && lstatSync(p).isDirectory();
       } catch (err) {
         return false;
       }
-    });
+    })
+    .reduce((acc: {}, path: string) => (acc[path] = true, acc), {});
+
+  return Object.keys(pathsAfterGlobbingHash).sort();
 }
 
 function gatherWorkspaceEntries(): WorkspaceEntry[] {
@@ -197,7 +213,7 @@ function gatherWorkspaceEntries(): WorkspaceEntry[] {
         return accProxy;
       }, acc);
   }, <WorkspaceEntry[]>[]))
-  .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function getApp() {
@@ -213,6 +229,6 @@ function getApp() {
 
 function onCommandRun(err: Error, stdout: string, stderr: string) {
   if (err || stderr) {
-    vscode.window.showErrorMessage((err || {message: stderr}).message);
+    vscode.window.showErrorMessage((err || { message: stderr }).message);
   }
 }

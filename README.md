@@ -4,8 +4,8 @@ Easily switch between workspaces
 
 ## How to use
 
-1. Save a workspace file (`.code-workspace`) as you would normally or use the `Ctrl-k Shift-w` chord to have `vscode-workspace-switcher` create it
-2. Set the extension's configuration option `vscodeWorkspaceSwitcher.paths` to an array of strings, each representing a directory where your `.code-workspace` files are stored
+1. Save a workspace file (`.code-workspace`), as you would normally, or use the `Ctrl-k Shift-w` chord to have `vscode-workspace-switcher` create it
+2. Set the extension's configuration option `vscodeWorkspaceSwitcher.paths` to an array of directory globs, representing the directories where your `.code-workspace` files are stored
 3. Use the `Ctrl-k w` chord to switch to any of your saved workspaces in the current window
 4. Use the `Ctrl-k Ctrl-w` chord to switch to any of your saved workspaces in a new window
 
@@ -20,8 +20,8 @@ Easily switch between workspaces
 This extension contributes the following settings:
 
 * `vscodeWorkspaceSwitcher.paths`
-  * Array of strings, each representing directory where your `.code-workspace` files are stored
-  * These directory paths will also be used to select where to create a `.code-workspace` file for the current workspace
+  * Array of directory globs, representing the directories where your `.code-workspace` files are stored
+  * These directory globs will also be used to select where to create a `.code-workspace` file for the current workspace
 * `vscodeWorkspaceSwitcher.codeExecutable`
   * String representing the path to VS Code's executable in case it cannot be found in `$PATH`
 * `vscodeWorkspaceSwitcher.codeInsidersExecutable`
