@@ -1,10 +1,12 @@
 {
   "files.exclude": {
-    "out": false,
-    "node_modules": "explorerExcludedFiles"
+    "out": true,
+    "**/node_modules": true,
+    "**/bower_components": true
   },
   "search.exclude": {
-    "out": true
-  },
-  "explorerExcludedFiles.show": false
+    "out": true,
+    "**/node_modules": true,
+    "**/bower_components": true
+  }
 }
