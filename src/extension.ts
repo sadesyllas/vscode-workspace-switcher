@@ -4,6 +4,7 @@ import { existsSync, lstatSync, readdirSync, writeFileSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { exec } from 'child_process';
 import * as vscode from 'vscode';
+import * as mkdirp from 'mkdirp';
 
 const glob = require('glob-fs')();
 
@@ -52,7 +53,7 @@ function saveWorkspacePrompt() {
         return;
       }
 
-      vscode.window.showInputBox(<vscode.InputBoxOptions>{ prompt: 'Enter a name for the workspace file...' }).then(
+      vscode.window.showInputBox(<vscode.InputBoxOptions>{ prompt: 'Enter a path for the workspace file...' }).then(
         (workspaceFileName: string) => {
           workspaceFileName = (workspaceFileName || '').trim();
 
@@ -60,9 +61,22 @@ function saveWorkspacePrompt() {
             return;
           }
 
-          const workspaceFilePath =
-            join(directoryItem.description, directoryItem.label, workspaceFileName)
-            + '.code-workspace';
+          workspaceFileName = workspaceFileName.replace(/\\+/g, '/').replace(/\/\/+/g, '/').replace(/^\//, '');
+
+          workspaceFileName = join(...workspaceFileName.split(/\//));
+
+          const workspaceDirectoryPath = join(
+            directoryItem.description, directoryItem.label, dirname(workspaceFileName));
+
+          workspaceFileName = basename(workspaceFileName);
+
+          try {
+            mkdirp.sync(workspaceDirectoryPath);
+          } catch (err) {
+            return;
+          }
+
+          const workspaceFilePath = join(workspaceDirectoryPath, workspaceFileName) + '.code-workspace';
 
           const workspaceFolderPaths = (vscode.workspace.workspaceFolders || []).map(
             (workspaceFolder: vscode.WorkspaceFolder) => ({ path: workspaceFolder.uri.fsPath }));
@@ -170,7 +184,7 @@ function getWorkspaceEntryDirectories(): string[] {
 
   const pathsAfterGlobbingHash = uniquePaths
     .map(p => {
-      p = p.replace(/\\/g, '/').replace(/\/$/, '') + '/';
+      p = p.replace(/\\+/g, '/').replace(/\/\/+/g, '/').replace(/\/$/, '') + '/';
 
       try {
         return glob.readdirSync(p, { cwd: '/' });

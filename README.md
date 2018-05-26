@@ -5,6 +5,7 @@ Easily switch between workspaces
 ## How to use
 
 1. Save a workspace file (`.code-workspace`), as you would normally, or use the `Ctrl-k Shift-w` chord to have `vscode-workspace-switcher` create it
+    - When using a `folder/name` path as the workspace's file name the `folder` directory stucture is automatically created before the workspace file is saved
 2. Set the extension's configuration option `vscodeWorkspaceSwitcher.paths` to an array of directory globs, representing the directories where your `.code-workspace` files are stored
 3. Use the `Ctrl-k w` chord to switch to any of your saved workspaces in the current window
 4. Use the `Ctrl-k Ctrl-w` chord to switch to any of your saved workspaces in a new window
@@ -48,3 +49,8 @@ This extension contributes the following key bindings:
   * Switch workspace in current window
 * `Ctrl-k Ctrl-w`
   * Switch workspace in new window
+
+## Dependencies
+
+* `glob-fs` is used for file name globbing of the paths set through the `vscodeWorkspaceSwitcher.paths` setting
+* `mkdirp` is used when saving a new workspace file and a `folder/name` path is used
