@@ -53,7 +53,10 @@ function saveWorkspacePrompt() {
         return;
       }
 
-      vscode.window.showInputBox(<vscode.InputBoxOptions>{ prompt: 'Enter a path for the workspace file...' }).then(
+      vscode.window.showInputBox(<vscode.InputBoxOptions>{
+        value: getFirstWorkspaceFolderName(),
+        prompt: 'Enter a path for the workspace file...'
+      }).then(
         (workspaceFileName: string) => {
           workspaceFileName = (workspaceFileName || '').trim();
 
@@ -228,6 +231,10 @@ function gatherWorkspaceEntries(): WorkspaceEntry[] {
       }, acc);
   }, <WorkspaceEntry[]>[]))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function getFirstWorkspaceFolderName(): string {
+  return (vscode.workspace.workspaceFolders || [{ name: undefined }])[0].name;
 }
 
 function getApp() {
