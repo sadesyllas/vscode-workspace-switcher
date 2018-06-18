@@ -1,10 +1,11 @@
 'use strict';
 
-import { existsSync, lstatSync, readdirSync, writeFileSync } from 'fs';
+import { existsSync, lstatSync, readdirSync, writeFileSync, statSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { exec } from 'child_process';
 import * as vscode from 'vscode';
 import * as mkdirp from 'mkdirp';
+import * as process from 'process';
 
 const glob = require('glob-fs')();
 
@@ -243,6 +244,14 @@ function getApp() {
 
   if (app.search(/\s/) !== -1) {
     return `"${app}"`;
+  }
+
+  if (app === 'code' && process.platform.toLocaleLowerCase().startsWith("win")) {
+    const codeWindowsScriptPath = join(dirname(process.execPath), 'bin', 'code.cmd');
+
+    if (existsSync(codeWindowsScriptPath) && statSync(codeWindowsScriptPath).isFile()) {
+      return `"${codeWindowsScriptPath}"`;
+    }
   }
 
   return app;

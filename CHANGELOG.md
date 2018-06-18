@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.9.0: Try to guess the path to VS Code's executable script in Windows
+
 - ## v1.8.0: Suggest the first workspace folder's name when saving a workspace
 
 - ## v1.7.0: Automatically create folders when saving a workspace with a `folder/name` path
