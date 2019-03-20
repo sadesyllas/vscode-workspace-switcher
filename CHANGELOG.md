@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.10.1: Include `node_modules` in extension package
+
 - ## v1.10.0: Use `statSync` to support symbolic links in vscodeWorkspaceSwitcher.paths (#15)
 
 - ## v1.9.0: Try to guess the path to VS Code's executable script in Windows
