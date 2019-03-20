@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.10.2: Use webpack to bundle the extension files
+
 - ## v1.10.1: Include `node_modules` in extension package
 
 - ## v1.10.0: Use `statSync` to support symbolic links in vscodeWorkspaceSwitcher.paths (#15)
