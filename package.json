@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -13,7 +13,7 @@
     "url": "https://github.com/sadesyllas/vscode-workspace-switcher/issues"
   },
   "engines": {
-    "vscode": "^1.15.0"
+    "vscode": "^1.32.0"
   },
   "categories": [
     "Other"
@@ -88,14 +88,14 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "mocha": "^2.3.3",
-    "@types/node": "^6.0.40",
-    "@types/mocha": "^2.2.32"
+    "typescript": "^3.3.1",
+    "vscode": "^1.1.28",
+    "tslint": "^5.12.1",
+    "@types/node": "^10.12.21",
+    "@types/mocha": "^2.2.42"
   },
   "dependencies": {
     "glob-fs": "^0.1.7",
-    "mkdirp": "^0.5.1"
+    "mkdir-p": "0.0.7"
   }
 }

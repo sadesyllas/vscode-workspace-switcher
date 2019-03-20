@@ -1,6 +1,6 @@
 'use strict';
 
-import { existsSync, lstatSync, readdirSync, writeFileSync, statSync } from 'fs';
+import { existsSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { exec } from 'child_process';
 import * as vscode from 'vscode';
@@ -200,7 +200,7 @@ function getWorkspaceEntryDirectories(): string[] {
     .concat(uniquePaths.map(p => p.replace(/\*\*\/?$/, '')))
     .filter(p => {
       try {
-        return existsSync(p) && lstatSync(p).isDirectory();
+        return existsSync(p) && statSync(p).isDirectory();
       } catch (err) {
         return false;
       }
@@ -217,7 +217,7 @@ function gatherWorkspaceEntries(): WorkspaceEntry[] {
     return readdirSync(dir)
       .filter(fileName => {
         try {
-          return /.code-workspace$/.test(fileName) && lstatSync(join(dir, fileName)).isFile();
+          return /.code-workspace$/.test(fileName) && statSync(join(dir, fileName)).isFile();
         } catch (err) {
           return false;
         }
