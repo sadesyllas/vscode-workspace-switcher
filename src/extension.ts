@@ -6,8 +6,7 @@ import { exec } from 'child_process';
 import * as vscode from 'vscode';
 import * as mkdirp from 'mkdirp';
 import * as process from 'process';
-
-const glob = require('glob-fs')();
+import * as glob from 'fast-glob';
 
 export function activate(context: vscode.ExtensionContext) {
   const disposables = [];
@@ -191,7 +190,7 @@ function getWorkspaceEntryDirectories(): string[] {
       p = p.replace(/\\+/g, '/').replace(/\/\/+/g, '/').replace(/\/$/, '') + '/';
 
       try {
-        return glob.readdirSync(p, { cwd: '/' });
+        return glob.sync<string>([p], { cwd: '/' });
       } catch (err) {
         return [];
       }

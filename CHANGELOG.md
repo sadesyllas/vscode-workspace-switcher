@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.10.3: Replace glob-fs with fast-glob (#17)
+
 - ## v1.10.2: Use webpack to bundle the extension files
 
 - ## v1.10.1: Include `node_modules` in extension package

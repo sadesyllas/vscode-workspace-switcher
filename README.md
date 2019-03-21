@@ -52,5 +52,5 @@ This extension contributes the following key bindings:
 
 ## Dependencies
 
-* `glob-fs` is used for file name globbing of the paths set through the `vscodeWorkspaceSwitcher.paths` setting
+* `fast-glob` is used for file name globbing of the paths set through the `vscodeWorkspaceSwitcher.paths` setting
 * `mkdirp` is used when saving a new workspace file and a `folder/name` path is used
