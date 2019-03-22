@@ -1,5 +1,10 @@
 # Changelog
 
+- ## v1.11.0: Implement `Delete Workspace` command and extension views (#16)
+    - Implement `Delete Workspace` command
+    - Implement Activity Bar view container
+    - Implement Explorer view
+
 - ## v1.10.5: Fix duplicate entries issue (#18, #20)
 
 - ## v1.10.4: Fix vscodeWorkspaceSwitcher.paths recursive glob support (#18, #19)

@@ -1,34 +1,51 @@
 'use strict';
 
-import { existsSync, readdirSync, statSync, writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { join, dirname, basename } from 'path';
-import { exec } from 'child_process';
 import * as vscode from 'vscode';
 import * as mkdirp from 'mkdirp';
-import * as process from 'process';
-import * as glob from 'fast-glob';
+import * as util from './util';
+import { WorkspaceEntry } from './model/workspace-entry';
+import { TreeItem } from './tree-view/explorer/tree-item';
+import { TreeDataProvider } from './tree-view/explorer/tree-data-provider';
 
 export function activate(context: vscode.ExtensionContext) {
   const disposables = [];
 
-  disposables.push(vscode.commands.registerCommand('extension.saveWorkspace', () => saveWorkspacePrompt()));
-  disposables.push(vscode.commands.registerCommand('extension.switchWorkspace', () => switchWorkspacePrompt(false)));
-  disposables.push(vscode.commands.registerCommand('extension.switchWorkspaceNewWindow', () => switchWorkspacePrompt(true)));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.saveWorkspace',
+    () => saveWorkspacePrompt()));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.switchWorkspace',
+    (workspaceEntry?: WorkspaceEntry) => workspaceEntry
+      ? util.switchToWorkspace(workspaceEntry, false)
+      : switchWorkspacePrompt(false)));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.switchWorkspaceNewWindow',
+    (treeItem?: TreeItem) => treeItem
+      ? util.switchToWorkspace(treeItem.workspaceEntry, true)
+      : switchWorkspacePrompt(true)));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.deleteWorkspace',
+    (treeItem?: TreeItem) => treeItem
+      ? util.deleteWorkspace(treeItem.workspaceEntry, true)
+      : deleteWorkspacePrompt()));
+  disposables.push(util.listenForConfigurationChanges());
+
+  const treeDataProvider = new TreeDataProvider();
+
+  vscode.window.registerTreeDataProvider('vscodeWorkspaceSwitcherViewInActivityBar', treeDataProvider);
+  vscode.window.registerTreeDataProvider('vscodeWorkspaceSwitcherViewInExplorer', treeDataProvider);
+
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.treeData.refresh', () => treeDataProvider.refresh()));
 
   context.subscriptions.push(...disposables);
+
+  util.setVSCodeWorkspaceSwitcherEmpty();
+  util.setVSCodeWorkspaceSwitcherViewInActivityBarShow();
+  util.setVSCodeWorkspaceSwitcherViewInExplorerShow();
 }
 
 export function deactivate() { }
 
-interface WorkspaceEntry {
-  name: string,
-  path: string,
-}
-
-let workspaceEntries = <WorkspaceEntry[]>[];
-
 function saveWorkspacePrompt() {
-  const workspaceEntryDirectories = getWorkspaceEntryDirectories();
+  const workspaceEntryDirectories = util.getWorkspaceEntryDirectories();
 
   if (!workspaceEntryDirectories.length) {
     vscode.window.showInformationMessage('No workspace directories have been configured');
@@ -54,7 +71,7 @@ function saveWorkspacePrompt() {
       }
 
       vscode.window.showInputBox(<vscode.InputBoxOptions>{
-        value: getFirstWorkspaceFolderName(),
+        value: util.getFirstWorkspaceFolderName(),
         prompt: 'Enter a path for the workspace file...'
       }).then(
         (workspaceFileName: string) => {
@@ -93,7 +110,9 @@ function saveWorkspacePrompt() {
             try {
               writeFileSync(workspaceFilePath, workspaceFileContent, { encoding: 'utf8' });
 
-              switchToWorkspace(<WorkspaceEntry>{
+              util.refreshTreeData();
+
+              util.switchToWorkspace(<WorkspaceEntry>{
                 path: workspaceFilePath,
               });
             } catch (error) {
@@ -124,7 +143,7 @@ function saveWorkspacePrompt() {
 }
 
 function switchWorkspacePrompt(inNewWindow: boolean = false) {
-  workspaceEntries = gatherWorkspaceEntries();
+  const workspaceEntries = util.gatherWorkspaceEntries();
 
   if (!workspaceEntries.length) {
     vscode.window.showInformationMessage('No workspaces found');
@@ -140,7 +159,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
   const options = <vscode.QuickPickOptions>{
     matchOnDescription: false,
     matchOnDetail: false,
-    placeHolder: `Choose workspace to switch to${inNewWindow ? ' in a new window' : ''}...`,
+    placeHolder: `Choose a workspace to switch to${inNewWindow ? ' in a new window' : ''}...`,
   };
 
   vscode.window.showQuickPick(workspaceItems, options).then(
@@ -155,118 +174,45 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
         return;
       }
 
-      switchToWorkspace(entry, inNewWindow);
+      util.switchToWorkspace(entry, inNewWindow);
     },
     (reason: any) => { });
 }
 
-function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
-  const app = getApp();
-  const command = `${app} ${inNewWindow ? '-n' : '-r'} "${workspaceEntry.path}"`;
-  exec(command, onCommandRun);
-}
 
-function getWorkspaceEntryDirectories(): string[] {
-  var paths = <string[]>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('paths');
+function deleteWorkspacePrompt() {
+  let workspaceEntries = util.gatherWorkspaceEntries();
 
-  if (!paths || !paths.length) {
-    return [];
+  if (!workspaceEntries.length) {
+    vscode.window.showInformationMessage('No workspaces found');
+
+    return;
   }
 
-  const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] || "~";
+  const workspaceItems = workspaceEntries.map(entry => <vscode.QuickPickItem>{
+    label: entry.name,
+    description: entry.path,
+  });
 
-  paths = paths.filter(p => typeof (p) === 'string').map(p => p.replace('~', userHome));
+  const options = <vscode.QuickPickOptions>{
+    matchOnDescription: false,
+    matchOnDetail: false,
+    placeHolder: `Choose a workspace to delete...`,
+  };
 
-  if (!paths.length) {
-    return [];
-  }
-
-  const pathsHash = paths.reduce((acc, path) => (acc[path] = true, acc), {});
-
-  const uniquePaths = Object.keys(pathsHash);
-
-  const pathsAfterGlobbingHash = uniquePaths
-    .map(p => {
-      try {
-        return glob.sync<string>([p], { cwd: '/', onlyDirectories: true });
-      } catch (err) {
-        return [];
-      }
-    })
-    .reduce((acc, val) => acc.concat(val.map(p => `/${p}`)), [])
-    .concat(uniquePaths.map(p => p.replace(/\*\*\/?$/, '')))
-    .filter(p => {
-      try {
-        return existsSync(p) && statSync(p).isDirectory();
-      } catch (err) {
-        return false;
-      }
-    })
-    .reduce((acc: {}, path: string) => (acc[path] = true, acc), {});
-
-  return Object.keys(pathsAfterGlobbingHash).sort();
-}
-
-function gatherWorkspaceEntries(): WorkspaceEntry[] {
-  const directoryPaths = getWorkspaceEntryDirectories();
-
-  const uniqueWorkspaceEntries = {};
-
-  return (<WorkspaceEntry[]>directoryPaths.reduce((acc: WorkspaceEntry[], dir: string) => {
-    return readdirSync(dir)
-      .filter(fileName => {
-        try {
-          return /.code-workspace$/.test(fileName) && statSync(join(dir, fileName)).isFile();
-        } catch (err) {
-          return false;
-        }
-      })
-      .reduce((accProxy: WorkspaceEntry[], fileName: string) => {
-        accProxy.push({
-          name: fileName.replace(/.code-workspace$/, ''),
-          path: join(dir, fileName),
-        });
-
-        return accProxy;
-      }, acc);
-  }, <WorkspaceEntry[]>[]))
-    .filter(workspaceEntry => {
-      if (uniqueWorkspaceEntries[workspaceEntry.path]) {
-        return false;
+  vscode.window.showQuickPick(workspaceItems, options).then(
+    (workspaceItem: vscode.QuickPickItem) => {
+      if (!workspaceItem) {
+        return;
       }
 
-      uniqueWorkspaceEntries[workspaceEntry.path] = true;
+      const entry = workspaceEntries.find(entry => entry.path === workspaceItem.description);
 
-      return true;
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
+      if (!entry) {
+        return;
+      }
 
-function getFirstWorkspaceFolderName(): string {
-  return (vscode.workspace.workspaceFolders || [{ name: undefined }])[0].name;
-}
-
-function getApp() {
-  const key = `${vscode.env.appName.toLowerCase().search("insiders") !== -1 ? 'codeInsiders' : 'code'}Executable`;
-  const app = <string>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get(key);
-
-  if (app.search(/\s/) !== -1) {
-    return `"${app}"`;
-  }
-
-  if (app === 'code' && process.platform.toLocaleLowerCase().startsWith("win")) {
-    const codeWindowsScriptPath = join(dirname(process.execPath), 'bin', 'code.cmd');
-
-    if (existsSync(codeWindowsScriptPath) && statSync(codeWindowsScriptPath).isFile()) {
-      return `"${codeWindowsScriptPath}"`;
-    }
-  }
-
-  return app;
-}
-
-function onCommandRun(err: Error, stdout: string, stderr: string) {
-  if (err || stderr) {
-    vscode.window.showErrorMessage((err || { message: stderr }).message);
-  }
+      util.deleteWorkspace(entry, true);
+    },
+    (reason: any) => { });
 }

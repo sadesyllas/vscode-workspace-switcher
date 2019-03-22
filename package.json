@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.10.5",
+  "version": "1.11.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -25,9 +25,7 @@
   ],
   "icon": "icon.png",
   "activationEvents": [
-    "onCommand:extension.saveWorkspace",
-    "onCommand:extension.switchWorkspace",
-    "onCommand:extension.switchWorkspaceNewWindow"
+    "*"
   ],
   "main": "./dist/extension",
   "contributes": {
@@ -49,35 +47,123 @@
           "type": "string",
           "default": "code-insiders",
           "description": "Path to the executable file for VS Code Insiders"
+        },
+        "vscodeWorkspaceSwitcher.showInActivityBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to show the activity bar tree view container"
+        },
+        "vscodeWorkspaceSwitcher.showInExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to show the list of workspaces in the explorer tree view container"
         }
       }
     },
     "commands": [
       {
-        "command": "extension.saveWorkspace",
-        "title": "Save workspace..."
+        "command": "vscodeWorkspaceSwitcher.saveWorkspace",
+        "title": "Save Workspace",
+        "icon": {
+          "light": "assets/light/save.svg",
+          "dark": "assets/dark/save.svg"
+        }
       },
       {
-        "command": "extension.switchWorkspace",
-        "title": "Switch workspace..."
+        "command": "vscodeWorkspaceSwitcher.switchWorkspace",
+        "title": "Switch Workspace"
       },
       {
-        "command": "extension.switchWorkspaceNewWindow",
-        "title": "Switch workspace in new window..."
+        "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
+        "title": "Switch Workspace in New Window",
+        "icon": {
+          "light": "assets/light/switch-new-window.svg",
+          "dark": "assets/dark/switch-new-window.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
+        "title": "Delete Workspace",
+        "icon": {
+          "light": "assets/light/delete.svg",
+          "dark": "assets/dark/delete.svg"
+        }
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vscodeWorkspaceSwitcherViewContainer",
+          "title": "Workspace Switcher",
+          "icon": "assets/dark/tree-container.svg",
+          "when": "vscodeWorkspaceSwitcherExplorerShow && !vscodeWorkspaceSwitcherEmpty"
+        }
+      ]
+    },
+    "views": {
+      "vscodeWorkspaceSwitcherViewContainer": [
+        {
+          "id": "vscodeWorkspaceSwitcherViewInActivityBar",
+          "name": "Workspaces",
+          "when": "vscodeWorkspaceSwitcherViewInActivityBarShow && !vscodeWorkspaceSwitcherEmpty"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "vscodeWorkspaceSwitcherViewInExplorer",
+          "name": "Workspaces",
+          "when": "vscodeWorkspaceSwitcherViewInExplorerShow && !vscodeWorkspaceSwitcherEmpty"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscodeWorkspaceSwitcher.saveWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "navigation"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.saveWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "inline@2"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "group": "inline@2"
+        }
+      ]
+    },
     "keybindings": [
       {
         "key": "Ctrl-k Shift-w",
-        "command": "extension.saveWorkspace"
+        "command": "vscodeWorkspaceSwitcher.saveWorkspace"
       },
       {
         "key": "Ctrl-k w",
-        "command": "extension.switchWorkspace"
+        "command": "vscodeWorkspaceSwitcher.switchWorkspace"
       },
       {
         "key": "Ctrl-k Ctrl-w",
-        "command": "extension.switchWorkspaceNewWindow"
+        "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow"
       }
     ]
   },
