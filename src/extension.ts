@@ -187,10 +187,8 @@ function getWorkspaceEntryDirectories(): string[] {
 
   const pathsAfterGlobbingHash = uniquePaths
     .map(p => {
-      p = p.replace(/\\+/g, '/').replace(/\/\/+/g, '/').replace(/\/$/, '') + '/';
-
       try {
-        return glob.sync<string>([p], { cwd: '/' });
+        return glob.sync<string>([p], { cwd: '/', onlyDirectories: true });
       } catch (err) {
         return [];
       }

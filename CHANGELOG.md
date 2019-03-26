@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.10.4: Fix vscodeWorkspaceSwitcher.paths recursive glob support (#18, #19)
+
 - ## v1.10.3: Replace glob-fs with fast-glob (#17)
 
 - ## v1.10.2: Use webpack to bundle the extension files
