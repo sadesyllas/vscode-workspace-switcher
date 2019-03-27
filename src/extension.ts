@@ -210,6 +210,8 @@ function getWorkspaceEntryDirectories(): string[] {
 function gatherWorkspaceEntries(): WorkspaceEntry[] {
   const directoryPaths = getWorkspaceEntryDirectories();
 
+  const uniqueWorkspaceEntries = {};
+
   return (<WorkspaceEntry[]>directoryPaths.reduce((acc: WorkspaceEntry[], dir: string) => {
     return readdirSync(dir)
       .filter(fileName => {
@@ -228,6 +230,15 @@ function gatherWorkspaceEntries(): WorkspaceEntry[] {
         return accProxy;
       }, acc);
   }, <WorkspaceEntry[]>[]))
+    .filter(workspaceEntry => {
+      if (uniqueWorkspaceEntries[workspaceEntry.path]) {
+        return false;
+      }
+
+      uniqueWorkspaceEntries[workspaceEntry.path] = true;
+
+      return true;
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 

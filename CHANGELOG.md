@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.10.5: Fix duplicate entries issue (#18, #20)
+
 - ## v1.10.4: Fix vscodeWorkspaceSwitcher.paths recursive glob support (#18, #19)
 
 - ## v1.10.3: Replace glob-fs with fast-glob (#17)
