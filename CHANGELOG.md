@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.12.0: Implement `Reload Workspaces` command
+
 - ## v1.11.0: Implement `Delete Workspace` command and extension views (#16)
     - Implement `Delete Workspace` command
     - Implement Activity Bar view container

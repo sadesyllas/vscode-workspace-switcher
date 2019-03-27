@@ -26,6 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
     (treeItem?: TreeItem) => treeItem
       ? util.deleteWorkspace(treeItem.workspaceEntry, true)
       : deleteWorkspacePrompt()));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.reloadWorkspaces',
+    () => util.refreshTreeData()));
   disposables.push(util.listenForConfigurationChanges());
 
   const treeDataProvider = new TreeDataProvider();

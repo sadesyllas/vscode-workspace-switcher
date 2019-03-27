@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -23,7 +23,7 @@
     "save",
     "switch"
   ],
-  "icon": "icon.png",
+  "icon": "assets/icons/extension.png",
   "activationEvents": [
     "*"
   ],
@@ -65,8 +65,8 @@
         "command": "vscodeWorkspaceSwitcher.saveWorkspace",
         "title": "Save Workspace",
         "icon": {
-          "light": "assets/light/save.svg",
-          "dark": "assets/dark/save.svg"
+          "light": "assets/icons/light/save.svg",
+          "dark": "assets/icons/dark/save.svg"
         }
       },
       {
@@ -77,16 +77,24 @@
         "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
         "title": "Switch Workspace in New Window",
         "icon": {
-          "light": "assets/light/switch-new-window.svg",
-          "dark": "assets/dark/switch-new-window.svg"
+          "light": "assets/icons/light/switch-new-window.svg",
+          "dark": "assets/icons/dark/switch-new-window.svg"
         }
       },
       {
         "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
         "title": "Delete Workspace",
         "icon": {
-          "light": "assets/light/delete.svg",
-          "dark": "assets/dark/delete.svg"
+          "light": "assets/icons/light/delete.svg",
+          "dark": "assets/icons/dark/delete.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
+        "title": "Reload Workspaces",
+        "icon": {
+          "light": "assets/icons/light/reload.svg",
+          "dark": "assets/icons/dark/reload.svg"
         }
       }
     ],
@@ -95,7 +103,7 @@
         {
           "id": "vscodeWorkspaceSwitcherViewContainer",
           "title": "Workspace Switcher",
-          "icon": "assets/dark/tree-container.svg",
+          "icon": "assets/icons/dark/tree-container.svg",
           "when": "vscodeWorkspaceSwitcherExplorerShow && !vscodeWorkspaceSwitcherEmpty"
         }
       ]
@@ -121,12 +129,22 @@
         {
           "command": "vscodeWorkspaceSwitcher.saveWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "navigation@2"
         },
         {
           "command": "vscodeWorkspaceSwitcher.saveWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
