@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.12.1: Fix directory glob support (#21)
+
 - ## v1.12.0: Implement `Reload Workspaces` command
 
 - ## v1.11.0: Implement `Delete Workspace` command and extension views (#16)

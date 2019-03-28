@@ -28,13 +28,13 @@ export function getWorkspaceEntryDirectories(): string[] {
   const pathsAfterGlobbingHash = uniquePaths
     .map(p => {
       try {
-        return glob.sync<string>([p], { cwd: '/', onlyDirectories: true });
+        return glob.sync<string>([p], { cwd: '/', onlyDirectories: true, absolute: true });
       } catch (err) {
         return [];
       }
     })
-    .reduce((acc, val) => acc.concat(val.map(p => `/${p}`)), [])
-    .concat(uniquePaths.map(p => p.replace(/\*\*\/?$/, '')))
+    .reduce((acc, val) => acc.concat(val), [])
+    .concat(uniquePaths.map(p => p.replace(/(:?\*\*?\/?)+$/, '')))
     .filter(p => {
       try {
         return existsSync(p) && statSync(p).isDirectory();

@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
