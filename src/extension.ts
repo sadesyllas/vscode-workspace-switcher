@@ -28,6 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
       : deleteWorkspacePrompt()));
   disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.reloadWorkspaces',
     () => util.refreshTreeData()));
+  disposables.push(vscode.commands.registerCommand('vscodeWorkspaceSwitcher.closeWorkspace',
+    () => util.closeWorkspace()));
   disposables.push(util.listenForConfigurationChanges());
 
   const treeDataProvider = new TreeDataProvider();

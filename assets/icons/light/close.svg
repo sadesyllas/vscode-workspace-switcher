@@ -1,0 +1,8 @@
+<svg version="1.1"
+     baseProfile="full"
+     width="13" height="13" viewBox="0 0 100 100"
+     preserveAspectRatio="xMidYMid meet"
+     xmlns="http://www.w3.org/2000/svg">
+  <path d="M 89,50 A 39,39 0 1,1 55,15" fill="transparent" stroke="#424242" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 55,15 l 34,34 m -34,0 l 34,-34" fill="transparent" stroke="#424242" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

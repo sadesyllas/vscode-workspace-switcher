@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.13.0: Implement `Close Workspace` command
+
 - ## v1.12.1: Fix directory glob support (#21)
 
 - ## v1.12.0: Implement `Reload Workspaces` command

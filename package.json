@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.12.1",
+  "version": "1.13.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -96,6 +96,14 @@
           "light": "assets/icons/light/reload.svg",
           "dark": "assets/icons/dark/reload.svg"
         }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.closeWorkspace",
+        "title": "Close Workspace",
+        "icon": {
+          "light": "assets/icons/light/close.svg",
+          "dark": "assets/icons/dark/close.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -137,6 +145,11 @@
           "group": "navigation@2"
         },
         {
+          "command": "vscodeWorkspaceSwitcher.closeWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "navigation@3"
+        },
+        {
           "command": "vscodeWorkspaceSwitcher.saveWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
           "group": "navigation@1"
@@ -145,6 +158,11 @@
           "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
           "group": "navigation@2"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.closeWorkspace",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [

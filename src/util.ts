@@ -174,3 +174,7 @@ export function setVSCodeWorkspaceSwitcherViewInExplorerShow() {
 export function refreshTreeData() {
   vscode.commands.executeCommand('vscodeWorkspaceSwitcher.treeData.refresh');
 }
+
+export function closeWorkspace() {
+  vscode.commands.executeCommand('workbench.action.closeFolder');
+}
