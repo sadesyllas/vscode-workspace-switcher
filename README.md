@@ -57,6 +57,8 @@ This extension contributes the following commands:
     * Delete a workspace
 * `Reload Workspaces`
     * Reload the list of workspaces
+* `Close Workspace`
+    * Close the currently open workspace
 
 ## Views
 
