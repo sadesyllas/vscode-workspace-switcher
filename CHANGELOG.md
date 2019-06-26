@@ -1,5 +1,7 @@
 # Changelog
 
+- ## v1.14.0: Show the UI elements unless no workspace folders are found
+
 - ## v1.13.1: Add `Close Workspace` command in README.md
 
 - ## v1.13.0: Implement `Close Workspace` command

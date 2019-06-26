@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -112,7 +112,7 @@
           "id": "vscodeWorkspaceSwitcherViewContainer",
           "title": "Workspace Switcher",
           "icon": "assets/icons/dark/tree-container.svg",
-          "when": "vscodeWorkspaceSwitcherExplorerShow && !vscodeWorkspaceSwitcherEmpty"
+          "when": "vscodeWorkspaceSwitcherExplorerShow && vscodeWorkspaceSwitcherViewContainersShow"
         }
       ]
     },
@@ -121,14 +121,14 @@
         {
           "id": "vscodeWorkspaceSwitcherViewInActivityBar",
           "name": "Workspaces",
-          "when": "vscodeWorkspaceSwitcherViewInActivityBarShow && !vscodeWorkspaceSwitcherEmpty"
+          "when": "vscodeWorkspaceSwitcherViewInActivityBarShow && vscodeWorkspaceSwitcherViewContainersShow"
         }
       ],
       "explorer": [
         {
           "id": "vscodeWorkspaceSwitcherViewInExplorer",
           "name": "Workspaces",
-          "when": "vscodeWorkspaceSwitcherViewInExplorerShow && !vscodeWorkspaceSwitcherEmpty"
+          "when": "vscodeWorkspaceSwitcherViewInExplorerShow && vscodeWorkspaceSwitcherViewContainersShow"
         }
       ]
     },

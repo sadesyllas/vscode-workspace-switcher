@@ -138,7 +138,7 @@ export function onCommandRun(err: Error, stdout: string, stderr: string) {
 export function listenForConfigurationChanges(): vscode.Disposable {
   return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
     if (event.affectsConfiguration('vscodeWorkspaceSwitcher.paths')) {
-      setVSCodeWorkspaceSwitcherEmpty();
+      setVSCodeWorkspaceSwitcherViewContainersShow();
 
       refreshTreeData();
     } else if (event.affectsConfiguration('vscodeWorkspaceSwitcher.showInActivityBar')) {
@@ -149,10 +149,11 @@ export function listenForConfigurationChanges(): vscode.Disposable {
   });
 }
 
-export function setVSCodeWorkspaceSwitcherEmpty() {
-  const vscodeWorkspaceSwitcherEmpty = !!!gatherWorkspaceEntries().length;
+export function setVSCodeWorkspaceSwitcherViewContainersShow() {
+  const vscodeWorkspaceSwitcherViewContainersShow = !!getWorkspaceEntryDirectories().length;
 
-  vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherEmpty', vscodeWorkspaceSwitcherEmpty);
+  vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherViewContainersShow',
+    vscodeWorkspaceSwitcherViewContainersShow);
 }
 
 export function setVSCodeWorkspaceSwitcherViewInActivityBarShow() {

@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(...disposables);
 
-  util.setVSCodeWorkspaceSwitcherEmpty();
+  util.setVSCodeWorkspaceSwitcherViewContainersShow();
   util.setVSCodeWorkspaceSwitcherViewInActivityBarShow();
   util.setVSCodeWorkspaceSwitcherViewInExplorerShow();
 }
