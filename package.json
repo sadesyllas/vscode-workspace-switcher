@@ -38,16 +38,6 @@
           "default": [],
           "description": "Paths of directories when `.code-workspace` files can be saved and then read from"
         },
-        "vscodeWorkspaceSwitcher.codeExecutable": {
-          "type": "string",
-          "default": "code",
-          "description": "Path to the executable file for VS Code"
-        },
-        "vscodeWorkspaceSwitcher.codeInsidersExecutable": {
-          "type": "string",
-          "default": "code-insiders",
-          "description": "Path to the executable file for VS Code Insiders"
-        },
         "vscodeWorkspaceSwitcher.showInActivityBar": {
           "type": "boolean",
           "default": true,

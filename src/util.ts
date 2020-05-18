@@ -86,9 +86,8 @@ export function getFirstWorkspaceFolderName(): string {
 }
 
 export function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
-  const app = getApp();
-  const command = `${app} ${inNewWindow ? '-n' : '-r'} "${workspaceEntry.path}"`;
-  exec(command, onCommandRun);
+  const uri = vscode.Uri.file(workspaceEntry.path);
+  return vscode.commands.executeCommand('vscode.openFolder', uri, inNewWindow);
 }
 
 export function deleteWorkspace(workspaceEntry: WorkspaceEntry, prompt: boolean) {
@@ -107,31 +106,6 @@ export function deleteWorkspace(workspaceEntry: WorkspaceEntry, prompt: boolean)
         (reason: any) => { });
   } else {
     unlinkSync(workspaceEntry.path);
-  }
-}
-
-export function getApp() {
-  const key = `${vscode.env.appName.toLowerCase().search("insiders") !== -1 ? 'codeInsiders' : 'code'}Executable`;
-  const app = <string>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get(key);
-
-  if (app.search(/\s/) !== -1) {
-    return `"${app}"`;
-  }
-
-  if (app === 'code' && process.platform.toLocaleLowerCase().startsWith("win")) {
-    const codeWindowsScriptPath = join(dirname(process.execPath), 'bin', 'code.cmd');
-
-    if (existsSync(codeWindowsScriptPath) && statSync(codeWindowsScriptPath).isFile()) {
-      return `"${codeWindowsScriptPath}"`;
-    }
-  }
-
-  return app;
-}
-
-export function onCommandRun(err: Error, stdout: string, stderr: string) {
-  if (err || stderr) {
-    vscode.window.showErrorMessage((err || { message: stderr }).message);
   }
 }
 

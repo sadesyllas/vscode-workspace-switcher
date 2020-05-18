@@ -116,7 +116,7 @@ function saveWorkspacePrompt() {
 
               util.refreshTreeData();
 
-              util.switchToWorkspace(<WorkspaceEntry>{
+              return util.switchToWorkspace(<WorkspaceEntry>{
                 path: workspaceFilePath,
               });
             } catch (error) {
@@ -134,11 +134,11 @@ function saveWorkspacePrompt() {
                     return;
                   }
 
-                  workspaceFilePathSaveFunc();
+                  return workspaceFilePathSaveFunc();
                 },
                 (reason: any) => { });
           } else {
-            workspaceFilePathSaveFunc();
+            return workspaceFilePathSaveFunc();
           }
         },
         (reason: any) => { });
@@ -178,7 +178,7 @@ function switchWorkspacePrompt(inNewWindow: boolean = false) {
         return;
       }
 
-      util.switchToWorkspace(entry, inNewWindow);
+      return util.switchToWorkspace(entry, inNewWindow);
     },
     (reason: any) => { });
 }
