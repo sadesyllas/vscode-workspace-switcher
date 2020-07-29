@@ -1,19 +1,22 @@
-import { existsSync, readdirSync, statSync, unlinkSync } from 'fs';
-import { join, dirname } from 'path';
-import { exec } from 'child_process';
+'use strict';
+
+import * as fs from 'fs';
+import * as path from 'path';
+import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as process from 'process';
 import * as glob from 'fast-glob';
+import * as folderStateCache from './tree-view/explorer/folder-state-cache';
 import { WorkspaceEntry } from './model/workspace-entry';
 
-export function getWorkspaceEntryDirectories(): string[] {
-  var paths = <string[]>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('paths');
+export function getWorkspaceEntryFolders(paths: string[] | null = null): path.ParsedPath[] {
+  paths = paths || <string[]>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('paths');
 
   if (!paths || !paths.length) {
     return [];
   }
 
-  const userHome = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] || "~";
+  const userHome = process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"] || "~";
 
   paths = paths.filter(p => typeof (p) === 'string').map(p => p.replace('~', userHome));
 
@@ -21,14 +24,13 @@ export function getWorkspaceEntryDirectories(): string[] {
     return [];
   }
 
-  const pathsHash = paths.reduce((acc, path) => (acc[path] = true, acc), {});
-
+  const pathsHash = paths.reduce((acc: { [_: string]: boolean }, path: string) => (acc[path] = true, acc), {});
   const uniquePaths = Object.keys(pathsHash);
 
   const pathsAfterGlobbingHash = uniquePaths
     .map(p => {
       try {
-        return glob.sync<string>([p], { cwd: '/', onlyDirectories: true, absolute: true });
+        return glob.sync<string>([p.replace(/\\+/g, '/')], { cwd: '/', onlyDirectories: true, absolute: true });
       } catch (err) {
         return [];
       }
@@ -37,38 +39,48 @@ export function getWorkspaceEntryDirectories(): string[] {
     .concat(uniquePaths.map(p => p.replace(/(:?\*\*?\/?)+$/, '')))
     .filter(p => {
       try {
-        return existsSync(p) && statSync(p).isDirectory();
+        return fs.existsSync(p) && fs.statSync(p).isDirectory();
       } catch (err) {
         return false;
       }
     })
-    .reduce((acc: {}, path: string) => (acc[path] = true, acc), {});
+    .map(p => p.replace(/\/+/g, path.sep))
+    .reduce((acc: { [_: string]: boolean }, path: string) => (acc[path] = true, acc), {});
 
-  return Object.keys(pathsAfterGlobbingHash).sort();
+  return Object.keys(pathsAfterGlobbingHash)
+    .map(path.parse)
+    .sort((a: path.ParsedPath, b: path.ParsedPath) => {
+      const aParsed = path.format(a);
+      const bParsed = path.format(b);
+
+      return aParsed.localeCompare(bParsed);
+    });
 }
 
-export function gatherWorkspaceEntries(): WorkspaceEntry[] {
-  const directoryPaths = getWorkspaceEntryDirectories();
-  const uniqueWorkspaceEntries = {};
+export function gatherWorkspaceEntries(paths: string[] | null = null): WorkspaceEntry[] {
+  const folderParsedPaths = getWorkspaceEntryFolders(paths);
+  const uniqueWorkspaceEntries: { [_: string]: boolean } = {};
 
-  return (<WorkspaceEntry[]>directoryPaths.reduce((acc: WorkspaceEntry[], dir: string) => {
-    return readdirSync(dir)
+  return (folderParsedPaths.reduce((acc: WorkspaceEntry[], dir: path.ParsedPath) => {
+    const dirFormatted = path.format(dir);
+
+    return fs.readdirSync(dirFormatted)
       .filter(fileName => {
         try {
-          return /.code-workspace$/.test(fileName) && statSync(join(dir, fileName)).isFile();
+          return /.code-workspace$/.test(fileName) && fs.statSync(path.join(dirFormatted, fileName)).isFile();
         } catch (err) {
           return false;
         }
       })
       .reduce((accProxy: WorkspaceEntry[], fileName: string) => {
-        accProxy.push({
-          name: fileName.replace(/.code-workspace$/, ''),
-          path: join(dir, fileName),
-        });
+        const name = fileName.replace(/.code-workspace$/, '');
+        const parsedPath = path.parse(path.join(dirFormatted, fileName))
+
+        accProxy.push(new WorkspaceEntry(name, parsedPath));
 
         return accProxy;
       }, acc);
-  }, <WorkspaceEntry[]>[]))
+  }, []))
     .filter(workspaceEntry => {
       if (uniqueWorkspaceEntries[workspaceEntry.path]) {
         return false;
@@ -78,36 +90,44 @@ export function gatherWorkspaceEntries(): WorkspaceEntry[] {
 
       return true;
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a: WorkspaceEntry, b: WorkspaceEntry) => a.name.localeCompare(b.name));
 }
 
-export function getFirstWorkspaceFolderName(): string {
+export function getFirstWorkspaceFolderName(): string | undefined {
   return (vscode.workspace.workspaceFolders || [{ name: undefined }])[0].name;
 }
 
-export function switchToWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
+export function openWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
   const app = getApp();
   const command = `${app} ${inNewWindow ? '-n' : '-r'} "${workspaceEntry.path}"`;
-  exec(command, onCommandRun);
+
+  childProcess.exec(command, onCommandRun);
 }
 
 export function deleteWorkspace(workspaceEntry: WorkspaceEntry, prompt: boolean) {
   if (prompt) {
     vscode.window.showInformationMessage(
       `Are you sure you want to delete file ${workspaceEntry.path}?`, 'Yes', 'No').then(
-        (answer: string) => {
+        (answer: string | undefined) => {
           if ((answer || '').trim().toLowerCase() !== 'yes') {
             return;
           }
 
-          unlinkSync(workspaceEntry.path);
+          fs.unlinkSync(workspaceEntry.path);
 
           refreshTreeData();
         },
         (reason: any) => { });
   } else {
-    unlinkSync(workspaceEntry.path);
+    fs.unlinkSync(workspaceEntry.path);
   }
+}
+
+export function openFolderWorkspaces(folderPath: string) {
+  const folderPathGlob = path.join(folderPath, '**');
+
+  gatherWorkspaceEntries([folderPathGlob]).forEach(
+    (workspaceEntry: WorkspaceEntry) => openWorkspace(workspaceEntry, true));
 }
 
 export function getApp() {
@@ -119,9 +139,9 @@ export function getApp() {
   }
 
   if (app === 'code' && process.platform.toLocaleLowerCase().startsWith("win")) {
-    const codeWindowsScriptPath = join(dirname(process.execPath), 'bin', 'code.cmd');
+    const codeWindowsScriptPath = path.join(path.dirname(process.execPath), 'bin', 'code.cmd');
 
-    if (existsSync(codeWindowsScriptPath) && statSync(codeWindowsScriptPath).isFile()) {
+    if (fs.existsSync(codeWindowsScriptPath) && fs.statSync(codeWindowsScriptPath).isFile()) {
       return `"${codeWindowsScriptPath}"`;
     }
   }
@@ -129,7 +149,7 @@ export function getApp() {
   return app;
 }
 
-export function onCommandRun(err: Error, stdout: string, stderr: string) {
+export function onCommandRun(err: childProcess.ExecException | null, stdout: string, stderr: string) {
   if (err || stderr) {
     vscode.window.showErrorMessage((err || { message: stderr }).message);
   }
@@ -145,12 +165,20 @@ export function listenForConfigurationChanges(): vscode.Disposable {
       setVSCodeWorkspaceSwitcherViewInActivityBarShow();
     } else if (event.affectsConfiguration('vscodeWorkspaceSwitcher.showInExplorer')) {
       setVSCodeWorkspaceSwitcherViewInExplorerShow();
+    } else if (event.affectsConfiguration('vscodeWorkspaceSwitcher.showDeleteWorkspaceButton')) {
+      setVSCodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow();
+
+      refreshTreeData();
+    } else if (event.affectsConfiguration('vscodeWorkspaceSwitcher.showTreeView')) {
+      setVSCodeWorkspaceSwitcherViewContainerTreeViewShow();
+
+      refreshTreeData();
     }
   });
 }
 
 export function setVSCodeWorkspaceSwitcherViewContainersShow() {
-  const vscodeWorkspaceSwitcherViewContainersShow = !!getWorkspaceEntryDirectories().length;
+  const vscodeWorkspaceSwitcherViewContainersShow = !!getWorkspaceEntryFolders().length;
 
   vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherViewContainersShow',
     vscodeWorkspaceSwitcherViewContainersShow);
@@ -170,6 +198,40 @@ export function setVSCodeWorkspaceSwitcherViewInExplorerShow() {
 
   vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherViewInExplorerShow',
     vscodeWorkspaceSwitcherViewInExplorerShow);
+}
+
+export function setVSCodeWorkspaceSwitcherViewContainerTreeViewShow(value?: boolean) {
+  if (value === undefined || value === null) {
+    value = getVSCodeWorkspaceSwitcherViewContainerTreeViewShow();
+  } else {
+    vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').update('showTreeView', value, true);
+  }
+
+  vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherViewContainerTreeViewShow', value);
+}
+
+export function getVSCodeWorkspaceSwitcherViewContainerTreeViewShow(): boolean {
+  return !!vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('showTreeView');
+}
+
+export function expandTreeView() {
+  folderStateCache.expandAll();
+
+  refreshTreeData();
+}
+
+export function collapseTreeView() {
+  folderStateCache.collapseAll();
+
+  refreshTreeData();
+}
+
+export function setVSCodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow() {
+  const vscodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow =
+    !!vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get('showDeleteWorkspaceButton');
+
+  vscode.commands.executeCommand('setContext', 'vscodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow',
+    vscodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow);
 }
 
 export function refreshTreeData() {

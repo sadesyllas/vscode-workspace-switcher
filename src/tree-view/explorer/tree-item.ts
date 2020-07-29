@@ -1,13 +1,14 @@
+'use strict';
+
 import * as vscode from 'vscode';
-import { WorkspaceEntry } from '../../model/workspace-entry';
 
 export class TreeItem extends vscode.TreeItem {
   public readonly label: string;
 
-  constructor(public readonly workspaceEntry: WorkspaceEntry) {
-    super(workspaceEntry.name, vscode.TreeItemCollapsibleState.None);
+  constructor(name: string, treeItemCollapsibleState: vscode.TreeItemCollapsibleState) {
+    super(name, treeItemCollapsibleState);
 
-    this.label = workspaceEntry.name;
+    this.label = name;
   }
 
   get description(): string {
@@ -15,14 +16,14 @@ export class TreeItem extends vscode.TreeItem {
   }
 
   get tooltip(): string {
-    return this.workspaceEntry.path;
+    throw Error('Not implemented');
   }
 
-  get command(): vscode.Command {
-    return {
-      title: `Switch To Workspace "${this.workspaceEntry.name}"`,
-      command: 'vscodeWorkspaceSwitcher.switchWorkspace',
-      arguments: [this.workspaceEntry],
-    };
+  get command(): vscode.Command | undefined {
+    return undefined;
+  }
+
+  get path(): string {
+    throw Error('Not implemented');
   }
 }

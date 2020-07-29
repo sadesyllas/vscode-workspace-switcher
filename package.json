@@ -2,7 +2,7 @@
   "name": "vscode-workspace-switcher",
   "displayName": "vscode-workspace-switcher",
   "description": "Easily switch between workspaces",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "publisher": "sadesyllas",
   "homepage": "https://github.com/sadesyllas/vscode-workspace-switcher",
   "repository": {
@@ -36,7 +36,7 @@
         "vscodeWorkspaceSwitcher.paths": {
           "type": "array",
           "default": [],
-          "description": "Paths of directories when `.code-workspace` files can be saved and then read from"
+          "description": "Paths of folders where `.code-workspace` files can be saved and then read from"
         },
         "vscodeWorkspaceSwitcher.codeExecutable": {
           "type": "string",
@@ -57,6 +57,16 @@
           "type": "boolean",
           "default": true,
           "description": "Whether or not to show the list of workspaces in the explorer tree view container"
+        },
+        "vscodeWorkspaceSwitcher.showDeleteWorkspaceButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to show the `Delete Workspace` button in view containers"
+        },
+        "vscodeWorkspaceSwitcher.showTreeView": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show the workspace entries as a tree of paths in view containers"
         }
       }
     },
@@ -70,15 +80,15 @@
         }
       },
       {
-        "command": "vscodeWorkspaceSwitcher.switchWorkspace",
-        "title": "Switch Workspace"
+        "command": "vscodeWorkspaceSwitcher.openWorkspace",
+        "title": "Open Workspace"
       },
       {
-        "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
-        "title": "Switch Workspace in New Window",
+        "command": "vscodeWorkspaceSwitcher.openWorkspaceInNewWindow",
+        "title": "Open Workspace in New Window",
         "icon": {
-          "light": "assets/icons/light/switch-new-window.svg",
-          "dark": "assets/icons/dark/switch-new-window.svg"
+          "light": "assets/icons/light/open-in-new-window.svg",
+          "dark": "assets/icons/dark/open-in-new-window.svg"
         }
       },
       {
@@ -87,6 +97,14 @@
         "icon": {
           "light": "assets/icons/light/delete.svg",
           "dark": "assets/icons/dark/delete.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.openFolderWorkspaces",
+        "title": "Open Folder Workspaces",
+        "icon": {
+          "light": "assets/icons/light/open-all.svg",
+          "dark": "assets/icons/dark/open-all.svg"
         }
       },
       {
@@ -103,6 +121,38 @@
         "icon": {
           "light": "assets/icons/light/close.svg",
           "dark": "assets/icons/dark/close.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.showListView",
+        "title": "Show List View",
+        "icon": {
+          "light": "assets/icons/light/list.svg",
+          "dark": "assets/icons/dark/list.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.expandTreeView",
+        "title": "Expand Tree View",
+        "icon": {
+          "light": "assets/icons/light/expand.svg",
+          "dark": "assets/icons/dark/expand.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.collapseTreeView",
+        "title": "Collapse Tree View",
+        "icon": {
+          "light": "assets/icons/light/collapse.svg",
+          "dark": "assets/icons/dark/collapse.svg"
+        }
+      },
+      {
+        "command": "vscodeWorkspaceSwitcher.showTreeView",
+        "title": "Show Tree View",
+        "icon": {
+          "light": "assets/icons/light/tree.svg",
+          "dark": "assets/icons/dark/tree.svg"
         }
       }
     ],
@@ -135,56 +185,106 @@
     "menus": {
       "view/title": [
         {
+          "command": "vscodeWorkspaceSwitcher.showListView",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.expandTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@2"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.collapseTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@3"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.showTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && !vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@1"
+        },
+        {
           "command": "vscodeWorkspaceSwitcher.saveWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
-          "group": "navigation@1"
+          "group": "navigation@4"
         },
         {
           "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
           "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
-          "group": "navigation@2"
+          "group": "navigation@5"
         },
         {
           "command": "vscodeWorkspaceSwitcher.closeWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "group": "navigation@6"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.showListView",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.expandTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@2"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.collapseTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && vscodeWorkspaceSwitcherViewContainerTreeViewShow",
           "group": "navigation@3"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.showTreeView",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && !vscodeWorkspaceSwitcherViewContainerTreeViewShow",
+          "group": "navigation@1"
         },
         {
           "command": "vscodeWorkspaceSwitcher.saveWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
-          "group": "navigation@1"
+          "group": "navigation@4"
         },
         {
           "command": "vscodeWorkspaceSwitcher.reloadWorkspaces",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
-          "group": "navigation@2"
+          "group": "navigation@5"
         },
         {
           "command": "vscodeWorkspaceSwitcher.closeWorkspace",
           "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
-          "group": "navigation@3"
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [
         {
-          "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
-          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "command": "vscodeWorkspaceSwitcher.openWorkspaceInNewWindow",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && viewItem != folder",
           "group": "inline@1"
         },
         {
           "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
-          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && viewItem != folder && vscodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow",
           "group": "inline@2"
         },
         {
-          "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow",
-          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "command": "vscodeWorkspaceSwitcher.openFolderWorkspaces",
+          "when": "view == vscodeWorkspaceSwitcherViewInActivityBar && viewItem == folder",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.openWorkspaceInNewWindow",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && viewItem != folder",
           "group": "inline@1"
         },
         {
           "command": "vscodeWorkspaceSwitcher.deleteWorkspace",
-          "when": "view == vscodeWorkspaceSwitcherViewInExplorer",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && viewItem != folder && vscodeWorkspaceSwitcherViewContainerDeleteWorkspaceButtonShow",
           "group": "inline@2"
+        },
+        {
+          "command": "vscodeWorkspaceSwitcher.openFolderWorkspaces",
+          "when": "view == vscodeWorkspaceSwitcherViewInExplorer && viewItem == folder",
+          "group": "inline@1"
         }
       ]
     },
@@ -195,11 +295,11 @@
       },
       {
         "key": "Ctrl-k w",
-        "command": "vscodeWorkspaceSwitcher.switchWorkspace"
+        "command": "vscodeWorkspaceSwitcher.openWorkspace"
       },
       {
         "key": "Ctrl-k Ctrl-w",
-        "command": "vscodeWorkspaceSwitcher.switchWorkspaceNewWindow"
+        "command": "vscodeWorkspaceSwitcher.openWorkspaceInNewWindow"
       }
     ]
   },
@@ -210,6 +310,7 @@
     "test-compile": "tsc -p ./"
   },
   "devDependencies": {
+    "@types/mkdirp": "^1.0.1",
     "@types/mocha": "^2.2.42",
     "@types/node": "^10.12.21",
     "ts-loader": "^5.3.3",
@@ -217,10 +318,10 @@
     "typescript": "^3.3.1",
     "vscode": "^1.1.28",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "fast-glob": "^2.2.6",
-    "mkdir-p": "0.0.7"
+    "mkdirp": "^1.0.4"
   }
 }
