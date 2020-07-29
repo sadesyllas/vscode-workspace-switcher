@@ -10,7 +10,7 @@ export class WorkspaceEntryTreeFolder extends TreeItem {
     super(name, collapsibleState);
 
     this.id = `folder|${this.path}|${collapsibleState}`;
-    this.contextValue = "folder";
+    this.contextValue = 'folder';
   }
 
   get tooltip(): string {

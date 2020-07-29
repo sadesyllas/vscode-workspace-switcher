@@ -132,7 +132,6 @@ function saveWorkspacePrompt() {
           }
 
           workspaceFileName = workspaceFileName.replace(/\\+/g, '/').replace(/\/\/+/g, '/').replace(/^\//, '');
-
           workspaceFileName = path.join(...workspaceFileName.split(/\//));
 
           const workspacefolderPath = path.join(
@@ -162,7 +161,7 @@ function saveWorkspacePrompt() {
 
               util.refreshTreeData();
 
-              util.openWorkspace(new WorkspaceEntry("", path.parse(workspaceFilePath)));
+              util.openWorkspace(new WorkspaceEntry('', path.parse(workspaceFilePath)));
             } catch (error) {
               vscode.window.showErrorMessage(
                 'Error while trying to save workspace '

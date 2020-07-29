@@ -21,12 +21,6 @@ Easily switch between workspaces
 
 When using a `folder/name` path as the workspace's file name, the `folder` prefix is automatically created before the workspace file is saved.
 
-## Requirements
-
-* The editor (i.e., `code` or `code-insiders`) must be in your `$PATH`
-  or the path to the appropriate executable must be set through the available settings
-  (`vscodeWorkspaceSwitcher.codeExecutable` or `vscodeWorkspaceSwitcher.codeInsidersExecutable`)
-
 ## Configuration
 
 This extension contributes the following settings:
@@ -34,10 +28,6 @@ This extension contributes the following settings:
 * `vscodeWorkspaceSwitcher.paths`
     * Array of folder globs, representing the folders where your `.code-workspace` files are stored
     * These folder globs will also be used to select where to create a `.code-workspace` file for the current workspace
-* `vscodeWorkspaceSwitcher.codeExecutable`
-    * String representing the path to VS Code's executable in case it cannot be found in `$PATH`
-* `vscodeWorkspaceSwitcher.codeInsidersExecutable`
-    * String representing the path to VS Code Insiders's executable in case it cannot be found in `$PATH`
 * `vscodeWorkspaceSwitcher.showInActivityBar`
     * Boolean controlling whether or not the workspaces will be shown in a separate view in the Activity Bar
 * `vscodeWorkspaceSwitcher.showInExplorer`

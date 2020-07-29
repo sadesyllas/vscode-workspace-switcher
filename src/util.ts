@@ -2,7 +2,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as process from 'process';
 import * as glob from 'fast-glob';
@@ -16,8 +15,7 @@ export function getWorkspaceEntryFolders(paths: string[] | null = null): path.Pa
     return [];
   }
 
-  const userHome = process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"] || "~";
-
+  const userHome = process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'] || '~';
   paths = paths.filter(p => typeof (p) === 'string').map(p => p.replace('~', userHome));
 
   if (!paths.length) {
@@ -98,10 +96,10 @@ export function getFirstWorkspaceFolderName(): string | undefined {
 }
 
 export function openWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
-  const app = getApp();
-  const command = `${app} ${inNewWindow ? '-n' : '-r'} "${workspaceEntry.path}"`;
+  const workspaceUri = vscode.Uri.file(workspaceEntry.path);
 
-  childProcess.exec(command, onCommandRun);
+  // VSCode handles errors with a popup.
+  vscode.commands.executeCommand('vscode.openFolder', workspaceUri, inNewWindow);
 }
 
 export function deleteWorkspace(workspaceEntry: WorkspaceEntry, prompt: boolean) {
@@ -128,31 +126,6 @@ export function openFolderWorkspaces(folderPath: string) {
 
   gatherWorkspaceEntries([folderPathGlob]).forEach(
     (workspaceEntry: WorkspaceEntry) => openWorkspace(workspaceEntry, true));
-}
-
-export function getApp() {
-  const key = `${vscode.env.appName.toLowerCase().search("insiders") !== -1 ? 'codeInsiders' : 'code'}Executable`;
-  const app = <string>vscode.workspace.getConfiguration('vscodeWorkspaceSwitcher').get(key);
-
-  if (app.search(/\s/) !== -1) {
-    return `"${app}"`;
-  }
-
-  if (app === 'code' && process.platform.toLocaleLowerCase().startsWith("win")) {
-    const codeWindowsScriptPath = path.join(path.dirname(process.execPath), 'bin', 'code.cmd');
-
-    if (fs.existsSync(codeWindowsScriptPath) && fs.statSync(codeWindowsScriptPath).isFile()) {
-      return `"${codeWindowsScriptPath}"`;
-    }
-  }
-
-  return app;
-}
-
-export function onCommandRun(err: childProcess.ExecException | null, stdout: string, stderr: string) {
-  if (err || stderr) {
-    vscode.window.showErrorMessage((err || { message: stderr }).message);
-  }
 }
 
 export function listenForConfigurationChanges(): vscode.Disposable {

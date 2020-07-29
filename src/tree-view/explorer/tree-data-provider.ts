@@ -38,7 +38,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
   getChildren(treeItem?: TreeItem): Thenable<TreeItem[]> {
     const showTreeView = util.getVSCodeWorkspaceSwitcherViewContainerTreeViewShow();
-    const treeItems = showTreeView ? this.getChildrenAsTree(treeItem!) : this.getChildrenAsList();
+    const treeItems = showTreeView ? this.getChildrenAsTree(treeItem) : this.getChildrenAsList();
 
     return Promise.resolve(treeItems);
   }
@@ -51,7 +51,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     folderStateCache.put(event.element.path, vscode.TreeItemCollapsibleState.Collapsed);
   }
 
-  private getChildrenAsTree(treeItem: TreeItem): TreeItem[] {
+  private getChildrenAsTree(treeItem: TreeItem | undefined): TreeItem[] {
     let pathGlobs = null;
 
     if (treeItem) {
