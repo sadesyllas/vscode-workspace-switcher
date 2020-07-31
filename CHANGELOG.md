@@ -1,5 +1,8 @@
 # Changelog
 
+- ## v1.15.1
+    - Fix keywords in package.json
+
 - ## v1.15.0
     - Implement tree view for workspace entries
     - Use VSCode's API for opening workspaces
