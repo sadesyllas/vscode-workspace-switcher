@@ -43,10 +43,10 @@ This extension contributes the following commands:
 
 * `Save Workspace`
     * Save the current workspace to a `.code-workspace` file
-* `Switch Workspace`
-    * Select a workspace and switch to it in the current window
-* `Switch Workspace in New Window`
-    * Select a workspace and switch to it in a new window
+* `Open Workspace`
+    * Select a workspace and open it in the current window
+* `Open Workspace in New Window`
+    * Select a workspace and open it in a new window
 * `Delete Workspace`
     * Delete a workspace
 * `Reload Workspaces`

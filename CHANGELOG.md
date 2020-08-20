@@ -1,5 +1,8 @@
 # Changelog
 
+- ## v1.15.2
+    - Fix command names in README.md
+
 - ## v1.15.1
     - Fix keywords in package.json
 
