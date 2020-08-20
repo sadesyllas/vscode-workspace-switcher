@@ -10,12 +10,12 @@ Easily switch between workspaces
     * or, use the extension's subsection in Explorer, in the same way,
     * or, use the `Ctrl-k Shift-w` chord,
     * or, save it manually using VS Code's File menu
-3. Switch to any of your saved workspaces in the current window
-    * Use the `W`-shaped icon in the Activity Bar and then click on name of the workspace you want to switch to,
+3. Open any of your saved workspaces in the current window
+    * Use the `W`-shaped icon in the Activity Bar and then click on name of the workspace you want to open,
     * or, use the extension's subsection in Explorer, in the same way,
     * or, use the `Ctrl-k w` chord
-4. Switch to any of your saved workspaces in a new window
-    * Use the `W`-shaped icon in the Activity Bar and then click on the `O`-shaped icon next to the name of the workspace you want to switch to,
+4. Open any of your saved workspaces in a new window
+    * Use the `W`-shaped icon in the Activity Bar and then click on the `O`-shaped icon next to the name of the workspace you want to open,
     * or, use the extension's subection in Explorer, in the same way,
     * or, Use the `Ctrl-k Ctrl-w` chord
 
@@ -87,9 +87,9 @@ This extension contributes the following key bindings:
 * `Ctrl-k Shift-w`
     * Save the current workspace to a `.code-workspace` file
 * `Ctrl-k w`
-    * Switch workspace in current window
+    * Open workspace in current window
 * `Ctrl-k Ctrl-w`
-    * Switch workspace in new window
+    * Open workspace in new window
 
 ## Dependencies
 

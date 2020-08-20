@@ -1,5 +1,8 @@
 # Changelog
 
+- ## v1.15.3
+    - Use `open` instead of `switch` in README.md
+
 - ## v1.15.2
     - Fix command names in README.md
 
