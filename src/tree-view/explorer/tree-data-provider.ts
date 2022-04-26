@@ -24,7 +24,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     new vscode.EventEmitter<TreeItem | undefined>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> = this._onDidChangeTreeData.event;
 
-  constructor() {
+  constructor(private readonly context: vscode.ExtensionContext) {
     folderStateCache.load();
   }
 
@@ -75,7 +75,13 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
         const relativeParsedPath = path.parse(relativePath);
 
         if (relativeParsedPath.dir === '') {
-          acc.items.push(new WorkspaceEntryTreeItem(workspaceEntry));
+          const item = new WorkspaceEntryTreeItem(workspaceEntry, treeItem, this.context);
+
+          acc.items.push(item);
+
+          if (item.parentRootToUpdate) {
+            this._onDidChangeTreeData.fire(item.parentRootToUpdate);
+          }
         } else {
           let relativePathParts = relativePath.split(path.sep);
 
@@ -92,7 +98,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
           const folderParsedPath = path.parse(folderPath);
           const folderCollapsibleState = folderStateCache.get(path.format(folderParsedPath));
 
-          acc.folders.push(new WorkspaceEntryTreeFolder(folderName, folderParsedPath, folderCollapsibleState));
+          acc.folders.push(new WorkspaceEntryTreeFolder(folderName, folderParsedPath, folderCollapsibleState, treeItem));
         }
 
         return acc;
@@ -123,6 +129,6 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
   private getChildrenAsList(): TreeItem[] {
     return util.gatherWorkspaceEntries().map(
-      (workspaceEntry: WorkspaceEntry) => new WorkspaceEntryTreeItem(workspaceEntry));
+      (workspaceEntry: WorkspaceEntry) => new WorkspaceEntryTreeItem(workspaceEntry, undefined, this.context));
   }
 }

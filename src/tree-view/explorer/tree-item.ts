@@ -11,14 +11,17 @@ export class TreeItem extends vscode.TreeItem {
     this.label = name;
   }
 
+  // @ts-ignore
   get description(): string {
     return '';
   }
 
+  // @ts-ignore
   get tooltip(): string {
     throw Error('Not implemented');
   }
 
+  // @ts-ignore
   get command(): vscode.Command | undefined {
     return undefined;
   }

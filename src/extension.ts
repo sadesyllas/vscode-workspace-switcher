@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   disposables.push(util.listenForConfigurationChanges());
 
-  const treeDataProvider = new TreeDataProvider();
+  const treeDataProvider = new TreeDataProvider(context);
 
   createTreeViews(treeDataProvider);
 
@@ -78,7 +78,7 @@ export function deactivate() { }
 
 function createTreeViews(treeDataProvider: TreeDataProvider) {
   const treeViewOptions = { treeDataProvider: treeDataProvider };
-  const activityBarTreeView = vscode.window.createTreeView('vscodeWorkspaceSwitcherViewInActivityBar', treeViewOptions);;
+  const activityBarTreeView = vscode.window.createTreeView('vscodeWorkspaceSwitcherViewInActivityBar', treeViewOptions);
   const explorerTreeView = vscode.window.createTreeView('vscodeWorkspaceSwitcherViewInExplorer', treeViewOptions);
 
   activityBarTreeView.onDidExpandElement(

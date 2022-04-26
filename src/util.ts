@@ -95,6 +95,13 @@ export function getFirstWorkspaceFolderName(): string | undefined {
   return (vscode.workspace.workspaceFolders || [{ name: undefined }])[0].name;
 }
 
+export function matchesCurrentWorkspaceName(uri: vscode.Uri): boolean {
+  const workspaceNameQuery = path.parse(uri.fsPath).name.toLowerCase();
+  const currentWorkspaceName = (vscode.workspace.name || '').replace(/\s+\([^)]+\)$/, '').toLowerCase();
+
+  return workspaceNameQuery === currentWorkspaceName;
+}
+
 export function openWorkspace(workspaceEntry: WorkspaceEntry, inNewWindow: boolean = false) {
   const workspaceUri = vscode.Uri.file(workspaceEntry.path);
 

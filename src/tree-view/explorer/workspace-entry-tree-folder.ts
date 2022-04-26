@@ -6,7 +6,8 @@ export class WorkspaceEntryTreeFolder extends TreeItem {
   constructor(
       public readonly name: string,
       public readonly parsedPath: path.ParsedPath,
-      collapsibleState: vscode.TreeItemCollapsibleState) {
+      collapsibleState: vscode.TreeItemCollapsibleState,
+      public readonly parent: vscode.TreeItem | undefined) {
     super(name, collapsibleState);
 
     this.id = `folder|${this.path}|${collapsibleState}`;

@@ -1,5 +1,8 @@
 # Changelog
 
+- ## v1.16.0
+    - Highlight path to currently selected workspace entry (#41)
+
 - ## v1.15.3
     - Use `open` instead of `switch` in README.md
 
