@@ -303,12 +303,12 @@
     "@types/mkdirp": "^1.0.1",
     "@types/mocha": "^2.2.42",
     "@types/node": "^10.12.21",
-    "ts-loader": "^5.3.3",
+    "ts-loader": "^9.4.2",
     "tslint": "^5.12.1",
     "typescript": "^3.3.1",
     "vscode": "^1.1.28",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "fast-glob": "^2.2.6",
